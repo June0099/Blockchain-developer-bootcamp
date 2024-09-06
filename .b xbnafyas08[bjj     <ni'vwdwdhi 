@@ -1,0 +1,115 @@
+[1mdiff --git a/contracts/Token.sol b/contracts/Token.sol[m
+[1mindex 3568480..9e87ee3 100644[m
+[1m--- a/contracts/Token.sol[m
+[1m+++ b/contracts/Token.sol[m
+[36m@@ -11,11 +11,36 @@[m [mcontract Token {[m
+ [m
+     mapping (address => uint256) public balanceOf;[m
+ [m
+[31m-    constructor(string memory _name, string memory _symbol, uint256 _totalSupply) {[m
+[32m+[m[32m    event Transfer([m[41m[m
+[32m+[m[32m        address indexed from,[m[41m [m
+[32m+[m[32m        address indexed to,[m[41m [m
+[32m+[m[32m        uint256 value[m[41m[m
+[32m+[m[32m    );[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    constructor([m[41m[m
+[32m+[m[32m        string memory _name,[m[41m [m
+[32m+[m[32m        string memory _symbol,[m[41m [m
+[32m+[m[32m        uint256 _totalSupply[m[41m[m
+[32m+[m[32m    ) {[m[41m[m
+         name = _name;[m
+         symbol = _symbol; [m
+         totalSupply = _totalSupply *(10**decimals);[m
+         balanceOf[msg.sender] = totalSupply;[m
+     }[m
+[32m+[m[41m[m
+[32m+[m[32m    function transfer(address _to, uint256 _value)[m[41m[m
+[32m+[m[32m        public[m[41m [m
+[32m+[m[32m        returns (bool success)[m[41m [m
+[32m+[m[32m    {[m[41m   [m
+[32m+[m[32m        require(balanceOf[msg.sender] >= _value);[m[41m[m
+[32m+[m[32m        require(_to !=address(0));[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;[m[41m[m
+[32m+[m[32m        balanceOf[_to] = balanceOf[_to] + _value;[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        emit Transfer(msg.sender, _to, _value);[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        return true;[m[41m[m
+[32m+[m[32m    }[m[41m[m
+ }[m
+ [m
+[1mdiff --git a/test/Token.js b/test/Token.js[m
+[1mindex 995659a..8d26d46 100644[m
+[1m--- a/test/Token.js[m
+[1m+++ b/test/Token.js[m
+[36m@@ -6,9 +6,7 @@[m [mconst tokens = (n) => {[m
+ }[m
+ [m
+ describe("Token", () => {[m
+[31m-  let token;[m
+[31m-  let accounts[m
+[31m-  let deployer[m
+[32m+[m[32m  let token, accounts, deployer,receiver[m[41m[m
+ [m
+   beforeEach(async () => {[m
+ 	  const Token = await ethers.getContractFactory('Token');[m
+[36m@@ -16,6 +14,7 @@[m [mdescribe("Token", () => {[m
+   [m
+     accounts = await ethers.getSigners()[m
+     deployer = accounts[0][m
+[32m+[m[32m    receiver = accounts [1][m[41m[m
+   });[m
+ [m
+   describe('Deployment', () => {[m
+[36m@@ -45,4 +44,46 @@[m [mit('assigns total supply to depoloyer', async() => {[m
+ [m
+ });[m
+ [m
+[31m-});[m
+\ No newline at end of file[m
+[32m+[m[41m[m
+[32m+[m[32m  describe('Sending Token', () => {[m[41m[m
+[32m+[m[41m  [m	[32mlet amount, transcation, result[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32mdescribe('Success', () => {[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32mbeforeEach(async () => {[m[41m[m
+[32m+[m[41m  [m		[32mamount = tokens(100)[m[41m[m
+[32m+[m[41m  [m		[32mtranscation = await token.connect(deployer).transfer(receiver.address, amount)[m[41m[m
+[32m+[m[41m  [m		[32mresult = await transcation.wait()[m[41m[m
+[32m+[m[41m  [m	[32m})[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32mit('Transfers token balances', async () => {[m[41m[m
+[32m+[m[32m      expect(await token.balanceOf(deployer.address)).to.equal(tokens(999900))[m[41m[m
+[32m+[m[41m  [m		[32mexpect(await token.balanceOf(receiver.address)).to.equal(amount)[m[41m[m
+[32m+[m[41m  [m	[32m})[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32mit ('Emits a Transfer event', async () => {[m[41m[m
+[32m+[m[41m  [m		[32mconst event = result.events[0][m[41m[m
+[32m+[m[41m  [m		[32mexpect(event.event).to.equal('Transfer')[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m		[32mconst args = event.args[m[41m[m
+[32m+[m[41m  [m		[32mexpect(args.from).to.equal(deployer.address)[m[41m[m
+[32m+[m[41m  [m		[32mexpect(args.to).to.equal(receiver.address)[m[41m[m
+[32m+[m[41m  [m		[32mexpect(args.value).to.equal(amount)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32m})[m[41m[m
+[32m+[m[32m  })[m[41m  [m
+[32m+[m[41m[m
+[32m+[m[41m  [m	[32mdescribe('Failure', () => {[m[41m[m
+[32m+[m[41m  [m		[32mit('rejects insufficient balances', async () => {[m[41m[m
+[32m+[m[41m  [m			[32mconst invalidAmount = tokens(100000000)[m[41m[m
+[32m+[m[41m  [m			[32mawait expect(token.connect(deployer).transfer(receiver.address, invalidAmount)).to.be.reverted[m[41m[m
+[32m+[m[41m  [m		[32m})[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m		[32mit('rejects invalid recipent', async () =>{[m[41m[m
+[32m+[m[41m  [m			[32mawait expect(token.connect(deployer).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.reverted[m[41m[m
+[32m+[m[41m  [m		[32m})[m[41m[m
+[32m+[m[41m  [m	[32m})[m[41m[m
+[32m+[m[32m  });[m[41m[m
+[32m+[m[32m})[m
+\ No newline at end of file[m
