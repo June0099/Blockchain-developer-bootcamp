@@ -47,7 +47,7 @@ it('assigns total supply to depoloyer', async() => {
 
 
   describe('Sending Token', () => {
-  	let amount, transcation, result
+  	let amount, transaction, result
 
   	describe('Success', () => {
 
@@ -55,8 +55,8 @@ it('assigns total supply to depoloyer', async() => {
 
   	beforeEach(async () => {
   		amount = tokens(100)
-  		transcation = await token.connect(deployer).transfer(receiver.address, amount)
-  		result = await transcation.wait()
+  		transaction = await token.connect(deployer).transfer(receiver.address, amount)
+  		result = await transaction.wait()
   	})
 
   	it('Transfers token balances', async () => {
@@ -91,13 +91,13 @@ it('assigns total supply to depoloyer', async() => {
   });
 
   describe('Approving Tokens',  () => {
-  	let amount, transcation, result
+  	let amount, transaction, result
 
 
   	beforeEach(async () =>{
   		amount = tokens(100) 
-  		transcation = await token.connect(deployer).approve(exchange.address, amount)
-  		result = await transcation.wait()
+  		transaction = await token.connect(deployer).approve(exchange.address, amount)
+  		result = await transaction.wait()
   	})
   	
   	describe ('Success',() => {
@@ -128,18 +128,18 @@ it('assigns total supply to depoloyer', async() => {
   }) 
 
   describe('Delegated Token Transfer', () => {
-    let amount, transcation, result
+    let amount, transaction, result
 
   	beforeEach(async () =>{
   		amount = tokens(100) 
-  		transcation = await token.connect(deployer).approve(exchange.address, amount);
-  		result = await transcation.wait()
+  		transaction = await token.connect(deployer).approve(exchange.address, amount);
+  		result = await transaction.wait()
   	})
 
   	describe('Success', () => {
   		beforeEach(async () => {
-  		transcation = await token.connect(exchange).transferFrom(deployer.address, receiver.address, amount)
-  		result = await transcation.wait()
+  		transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address, amount)
+  		result = await transaction.wait()
   	})
 
   		it('transfers token balances', async () => {
