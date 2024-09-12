@@ -5,7 +5,7 @@ const tokens = (n) => {
 	return ethers.utils.parseUnits(n.toString(), 'ether')
 }
 
-describe("Exchange", () => {
+describe('Exchange', () => {
   let deployer, feeAccount, exchange
 
   const feePercent = 10
@@ -14,10 +14,10 @@ describe("Exchange", () => {
     const Exchange = await ethers.getContractFactory('Exchange');
     const Token = await ethers.getContractFactory('Token');
 
-    token1 = await Token.deploy('Dapp University', 'DAPP', 1000000)
-    token2 = await Token.deploy('Mock Dai', 'mDAI', 1000000)
+    token1 = await Token.deploy('Dapp University', 'DAPP', '1000000')
+    token2 = await Token.deploy('Mock Dai', 'mDAI', '1000000')
 
-    accounts = await ethers.getSigners();
+    accounts = await ethers.getSigners()
     deployer = accounts[0]
     feeAccount = accounts[1]
     user1 = accounts[2]
@@ -28,19 +28,19 @@ describe("Exchange", () => {
     await transaction.wait()
     
     exchange = await Exchange.deploy(feeAccount.address,feePercent)
-  });
+  })
 
   describe('Deployment', () => {
  
     it('tracks the fee account', async () => {
-	  expect(await exchange.feeAccount()).to.equal(feeAccount.address);
-    });
+	  expect(await exchange.feeAccount()).to.equal(feeAccount.address)
+    })
 
 
     it('tracks the fee percent', async () => {
-    expect(await exchange.feePercent()).to.equal(feePercent);
-    });
-  });
+    expect(await exchange.feePercent()).to.equal(feePercent)
+    })
+  })
 
     describe('Depositing Tokens', () => {
       let transcation, result 
@@ -129,7 +129,7 @@ describe("Exchange", () => {
        describe('Failure', () => {
          it('fails for insufficient balances', async () => {
           // Attempts to withdraw tokens without depositing 
-          await expect(exchange.connect(user1).depositToken(token1.address, amount)).to.be.reverted
+          await expect(exchange.connect(user1).withdrawToken(token1.address, amount)).to.be.reverted
         })
 
       })
@@ -149,7 +149,7 @@ describe('Checking Balances', () => {
         transaction = await exchange.connect(user1).depositToken(token1.address, amount)
         result = await transaction.wait()
 
-      });
+      })
 
         it('returns user balance', async () => {
           expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(amount)
@@ -278,10 +278,11 @@ describe('Checking Balances', () => {
           await expect(exchange.connect(user1).cancelOrder(invalidOrderId)).to.be.reverted
         })
 
-          it('rejects unauthorized cancelOrder', async () => {
+          it('rejects unauthorized cancelations', async () => {
             await expect(exchange.connect(user2).cancelOrder(1)).to.be.reverted
           })
-       })
+        
+        })
 
       })
 
@@ -295,7 +296,7 @@ describe('Checking Balances', () => {
           result = await transaction.wait()
          })
 
-        it('Executes the trade and charge fees', async () => {
+        it('executes the trade and charge fees', async () => {
           // Token Give
           expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(tokens(0))
           expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(tokens(1))
@@ -325,7 +326,7 @@ describe('Checking Balances', () => {
           expect(args.timestamp).to.at.least(1)
         })
 
-        })
+      })
 
         describe('Failure', () => {
           it('rejects invalid order ids', async () => {
