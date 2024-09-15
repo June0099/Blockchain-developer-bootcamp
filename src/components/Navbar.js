@@ -23,7 +23,7 @@ const Navbar = () => {
   const networkHandler = async (e) => {
   	await window.ethereum.request({
   	  method: 'wallet_switchEthereumChain',
-  	  params: [{ chainId: e.target.value }]
+  	  params: [{ chainId: e.target.value }],
   	})
   }
 
