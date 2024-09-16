@@ -14,6 +14,7 @@ import {
 import Navbar from './Navbar'
 import Markets from './Markets'
 import Balance from './Balance'
+import Order from './Order'
 
 function App() {
   const dispatch = useDispatch()
@@ -22,7 +23,7 @@ function App() {
     // Connect Ethers to blockchain
     const provider = loadProvider(dispatch)
 
-    // Fetch current network's chainId (e.g. hardhat: 31337, sepolia: 42)
+    // Fetch current network's chainId (e.g. hardhat: 31337, sepolia: 11155111)
     const chainId = await loadNetwork(provider, dispatch)
 
     //Reload page when network changes
@@ -65,7 +66,7 @@ function App() {
 
           <Balance />
 
-          {/* Order */}
+          <Order />
 
         </section>
         <section className='exchange__section--right grid'>
